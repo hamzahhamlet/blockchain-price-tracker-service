@@ -12,6 +12,8 @@ import { AlertsModule } from './alerts/alerts.module';
 
 // Constants
 import { typeOrmConfig } from './constants/typeOrmConfig';
+import { TokenPriceTrackerModule } from './token-price-tracker/token-price-tracker.module';
+import { BlockchainServiceService } from './blockchain-service/blockchain-service.service';
 
 @Module({
   imports: [
@@ -29,8 +31,9 @@ import { typeOrmConfig } from './constants/typeOrmConfig';
     }),
     SwapModule,
     AlertsModule,
+    TokenPriceTrackerModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, BlockchainServiceService],
 })
 export class AppModule {}

@@ -11,22 +11,22 @@ export class TokenPriceEntity {
   id: string;
 
   @Column({ type: 'varchar' })
-  tokenName: string;
+  tokenName: string; // polygon
 
   @Column({ type: 'varchar' })
-  tokenSymbol: string;
+  tokenSymbol: string; // eth
 
   @Column({ type: 'varchar' })
-  tokenAddress: string;
+  tokenAddress: string; // address
 
   @Column({ type: 'decimal' })
-  usdPrice: number;
+  usdPrice: number; // usd price at the time
 
   @Column({ type: 'varchar', nullable: true, default: '0' })
-  percentChangeInLast24hr: string;
+  percentChangeInLast24hr: string; // percentage change in last 24 hours
 
   @Column({ type: 'varchar' })
-  blockTimestamp: string;
+  blockTimestamp: string; // latest block timestamp
 
   @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;

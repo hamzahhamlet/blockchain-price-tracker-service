@@ -34,8 +34,6 @@ export class CreateTokenPriceDto {
 }
 
 export class SwapResponse {
-
-  
   @IsNumber()
   @ApiProperty({ description: 'Amount you receive after swap' })
   btcAmount: number;

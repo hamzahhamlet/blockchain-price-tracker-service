@@ -2,7 +2,7 @@ import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateAlertDto } from './dto/createAlert.dto';
-import { AlertsEntity } from './entity/alerts.entity';
+import { AlertsEntity } from '../entities/alerts.entity';
 
 @Injectable()
 export class AlertsService {

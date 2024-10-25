@@ -1,6 +1,6 @@
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Module } from '@nestjs/common';
-import { AlertsEntity } from './entity/alerts.entity';
+import { AlertsEntity } from '../entities/alerts.entity';
 import { AlertsController } from './alerts.controller';
 import { AlertsService } from './alerts.service';
 
