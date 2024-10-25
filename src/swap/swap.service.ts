@@ -9,7 +9,7 @@ import { TokenPriceEntity } from './entity/token-price.entity';
 import { CreateTokenPriceDto } from './dto/createTokenPrice.dto';
 
 @Injectable()
-export class TokensPriceService {
+export class SwapService {
   constructor(
     @InjectRepository(TokenPriceEntity)
     private readonly tokenPriceEntity: Repository<TokenPriceEntity>,
@@ -44,6 +44,38 @@ export class TokensPriceService {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
+  }
+
+  async calcSwapRate(ethAmount: number) {
+    const [ethToken, btcToken] = await Promise.all([
+      this.getTokenPrice(
+        this.configService.get<string>('ETH_ADDRESS'),
+        this.configService.get<string>('ETH_CHAIN'),
+      ),
+      this.getTokenPrice(
+        this.configService.get<string>('BITCOIN_ADDRESS'),
+        this.configService.get<string>('POLYGON_CHAIN'),
+      ),
+    ]);
+
+    const ethToUsd = ethToken.toJSON().usdPrice;
+    const btcToUsd = btcToken.toJSON().usdPrice;
+
+    const totalEthValueInUsd = ethAmount * ethToUsd;
+
+    const feePercentage = 0.03;
+    const totalFeeUsd = totalEthValueInUsd * feePercentage;
+    const totalFeeEth = totalFeeUsd / ethToUsd;
+
+    const valueAfterFee = totalEthValueInUsd - totalFeeUsd;
+
+    const btcAmount = valueAfterFee / btcToUsd;
+
+    return {
+      btcAmount,
+      feeInEth: totalFeeEth,
+      feeInUsd: totalFeeUsd,
+    };
   }
 
   @Cron('*/5 * * * *')

@@ -7,7 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ScheduleModule } from '@nestjs/schedule';
 import { MailerModule } from '@nestjs-modules/mailer';
-import { TokensPriceModule } from './tokens-price/tokens-price.module';
+import { SwapModule } from './swap/swap.module';
 import { AlertsModule } from './alerts/alerts.module';
 
 // Constants
@@ -27,7 +27,7 @@ import { typeOrmConfig } from './constants/typeOrmConfig';
         },
       },
     }),
-    TokensPriceModule,
+    SwapModule,
     AlertsModule,
   ],
   controllers: [AppController],
