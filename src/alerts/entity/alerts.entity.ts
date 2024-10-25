@@ -5,25 +5,22 @@ import {
   CreateDateColumn,
 } from 'typeorm';
 
-@Entity('tokenPrices')
-export class TokenPriceModel {
+@Entity('alerts')
+export class AlertsEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column({ type: 'varchar' })
-  tokenName: string;
-
-  @Column({ type: 'varchar' })
-  tokenSymbol: string;
-
-  @Column({ type: 'varchar' })
-  tokenAddress: string;
+  chain: string;
 
   @Column({ type: 'decimal' })
-  usdPrice: number;
+  dollar: number;
 
   @Column({ type: 'varchar' })
-  blockTimestamp: string;
+  email: string;
+
+  @Column({ type: 'boolean', default: false })
+  isSent: boolean;
 
   @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;

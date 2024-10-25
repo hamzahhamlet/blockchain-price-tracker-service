@@ -22,6 +22,10 @@ export class CreateTokenPriceDto {
   @IsNotEmpty()
   usdPrice: number;
 
+  @IsString()
+  @IsNotEmpty()
+  percentChangeInLast24hr: string;
+
   @IsNumberString()
   @IsNotEmpty()
   blockTimestamp: string;

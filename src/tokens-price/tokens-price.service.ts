@@ -1,24 +1,25 @@
+import Moralis from 'moralis';
 import { Injectable, HttpStatus, HttpException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import Moralis from 'moralis';
 import { Cron } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { TokenPriceModel } from './model/token-price.entity';
+
+import { TokenPriceEntity } from './entity/token-price.entity';
 import { CreateTokenPriceDto } from './dto/createTokenPrice.dto';
 
 @Injectable()
 export class TokensPriceService {
   constructor(
-    @InjectRepository(TokenPriceModel)
-    private readonly tokenPriceModel: Repository<TokenPriceModel>,
+    @InjectRepository(TokenPriceEntity)
+    private readonly tokenPriceEntity: Repository<TokenPriceEntity>,
     private readonly configService: ConfigService,
   ) {}
 
-  async saveTokenPrice(data: CreateTokenPriceDto): Promise<TokenPriceModel> {
+  async saveTokenPrice(data: CreateTokenPriceDto): Promise<TokenPriceEntity> {
     try {
-      const tokenPrice = this.tokenPriceModel.create(data);
-      return await this.tokenPriceModel.save(tokenPrice);
+      const tokenPrice = this.tokenPriceEntity.create(data);
+      return await this.tokenPriceEntity.save(tokenPrice);
     } catch (err) {
       console.error('Error in saveTokenPrice:', err);
       throw new HttpException(
@@ -45,43 +46,33 @@ export class TokensPriceService {
     }
   }
 
-  @Cron('*/30 * * * * *')
+  @Cron('*/5 * * * *')
   async handleCronForUpdatePrices() {
     try {
-      const ethToken = await this.getTokenPrice(
-        this.configService.get<string>('ETH_ADDRESS'),
-        this.configService.get<string>('ETH_CHAIN'),
-      );
+      const tokensList = await Promise.all([
+        this.getTokenPrice(
+          this.configService.get<string>('ETH_ADDRESS'),
+          this.configService.get<string>('ETH_CHAIN'),
+        ),
+        this.getTokenPrice(
+          this.configService.get<string>('POLYGON_ADDRESS'),
+          this.configService.get<string>('POLYGON_CHAIN'),
+        ),
+      ]);
 
-      const polygonToken = await this.getTokenPrice(
-        this.configService.get<string>('POLYGON_ADDRESS'),
-        this.configService.get<string>('POLYGON_CHAIN'),
-      );
+      tokensList.forEach(async (token) => {
+        const tokenJSON = token.toJSON();
 
-      const ethTokenJson = ethToken.toJSON();
-      const polygonTokenJson = polygonToken.toJSON();
-
-      console.log({ ethTokenJson, polygonTokenJson });
-
-      const token1 = await this.saveTokenPrice({
-        tokenName: ethTokenJson.tokenName,
-        tokenSymbol: ethTokenJson.tokenSymbol,
-        tokenAddress: ethTokenJson.tokenAddress,
-        usdPrice: ethTokenJson.usdPrice,
-        // @ts-ignore
-        blockTimestamp: ethTokenJson.blockTimestamp ?? '',
+        await this.saveTokenPrice({
+          tokenName: tokenJSON.tokenName,
+          tokenSymbol: tokenJSON.tokenSymbol,
+          tokenAddress: tokenJSON.tokenAddress,
+          usdPrice: tokenJSON.usdPrice,
+          percentChangeInLast24hr: tokenJSON['24hrPercentChange'] ?? '',
+          // @ts-ignore
+          blockTimestamp: tokenJSON.blockTimestamp ?? '',
+        });
       });
-
-      const token2 = await this.saveTokenPrice({
-        tokenName: polygonTokenJson.tokenName,
-        tokenSymbol: polygonTokenJson.tokenSymbol,
-        tokenAddress: polygonTokenJson.tokenAddress,
-        usdPrice: polygonTokenJson.usdPrice,
-        // @ts-ignore
-        blockTimestamp: polygonTokenJson.blockTimestamp ?? '',
-      });
-
-      console.log({ token1, token2 });
     } catch (err) {
       console.error(err);
     }
