@@ -7,10 +7,10 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TokensPriceModule } from './tokens-price/tokens-price.module';
+import { AlertsModule } from './alerts/alerts.module';
 
 // Constants
 import { typeOrmConfig } from './constants/typeOrmConfig';
-import { AlertsModule } from './alerts/alerts.module';
 
 @Module({
   imports: [
