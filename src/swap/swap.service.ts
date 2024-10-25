@@ -6,7 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { TokenPriceEntity } from './entity/token-price.entity';
-import { CreateTokenPriceDto } from './dto/createTokenPrice.dto';
+import { CreateTokenPriceDto } from './dto/swap.dto';
 
 @Injectable()
 export class SwapService {
@@ -19,7 +19,7 @@ export class SwapService {
   async saveTokenPrice(data: CreateTokenPriceDto): Promise<TokenPriceEntity> {
     try {
       const tokenPrice = this.tokenPriceEntity.create(data);
-      return await this.tokenPriceEntity.save(tokenPrice);
+      return this.tokenPriceEntity.save(tokenPrice);
     } catch (err) {
       console.error('Error in saveTokenPrice:', err);
       throw new HttpException(
@@ -46,7 +46,11 @@ export class SwapService {
     }
   }
 
-  async calcSwapRate(ethAmount: number) {
+  async calcSwapRate(ethAmount: number): Promise<{
+    btcAmount: number;
+    feeInEth: number;
+    feeInUsd: number;
+  }> {
     const [ethToken, btcToken] = await Promise.all([
       this.getTokenPrice(
         this.configService.get<string>('ETH_ADDRESS'),

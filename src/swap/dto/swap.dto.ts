@@ -3,7 +3,9 @@ import {
   IsNumberString,
   IsString,
   IsDecimal,
+  IsNumber,
 } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateTokenPriceDto {
   @IsString()
@@ -29,4 +31,20 @@ export class CreateTokenPriceDto {
   @IsNumberString()
   @IsNotEmpty()
   blockTimestamp: string;
+}
+
+export class SwapResponse {
+
+  
+  @IsNumber()
+  @ApiProperty({ description: 'Amount you receive after swap' })
+  btcAmount: number;
+
+  @IsNumber()
+  @ApiProperty({ description: 'Fee deducted (Eth Representation)' })
+  feeInEth: number;
+
+  @IsNumber()
+  @ApiProperty({ description: 'Fee deducted (USD Representation)' })
+  feeInUsd: number;
 }
