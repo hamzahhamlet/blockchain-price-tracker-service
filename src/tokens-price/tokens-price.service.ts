@@ -7,7 +7,6 @@ import { Repository } from 'typeorm';
 
 import { TokenPriceEntity } from './entity/token-price.entity';
 import { CreateTokenPriceDto } from './dto/createTokenPrice.dto';
-import { MailerService } from '../mailer/mailer.service';
 
 @Injectable()
 export class TokensPriceService {
@@ -15,7 +14,6 @@ export class TokensPriceService {
     @InjectRepository(TokenPriceEntity)
     private readonly tokenPriceEntity: Repository<TokenPriceEntity>,
     private readonly configService: ConfigService,
-    private readonly mailerService: MailerService,
   ) {}
 
   async saveTokenPrice(data: CreateTokenPriceDto): Promise<TokenPriceEntity> {
@@ -75,20 +73,6 @@ export class TokensPriceService {
           blockTimestamp: tokenJSON.blockTimestamp ?? '',
         });
       });
-    } catch (err) {
-      console.error(err);
-    }
-  }
-
-  @Cron('*/5 * * * * *')
-  async handleCronForDummyEmailTest() {
-    try {
-      this.mailerService.sendMail(
-        'hamzah.hamlet@gmail.com',
-        'Email from Nestjs App',
-        'This is the text.',
-        '',
-      );
     } catch (err) {
       console.error(err);
     }
